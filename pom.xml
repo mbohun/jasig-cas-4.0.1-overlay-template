@@ -2,6 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd ">
+
+    <parent>
+        <groupId>au.org.ala</groupId>
+        <artifactId>ala-parent-pom</artifactId>
+        <version>1.0</version>
+    </parent>
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>au.org.ala</groupId>
     <artifactId>ala-cas</artifactId>
@@ -35,18 +42,131 @@
     </build>
 
     <dependencies>
+	<!-- TODO: review the use of ala-headers-and-tails, currently this is needed to include javax.servlet API -->
         <dependency>
+            <groupId>au.org.ala</groupId>
+            <artifactId>ala-header-and-tails</artifactId>
+            <version>2.3</version>
+        </dependency>
+	<dependency>
             <groupId>org.jasig.cas</groupId>
             <artifactId>cas-server-webapp</artifactId>
             <version>${cas.version}</version>
             <type>war</type>
             <scope>runtime</scope>
         </dependency>
+	<!-- TODO: cas-server-webapp-support BUG workaround
+	     - https://issues.jasig.org/browse/CAS-1380
+	     - https://github.com/Jasig/cas/pull/382
+	     the old spring dependencies are required to workaround the bug without them cas-server-webapp-support
+	     throws an exception on cas.war deploy and won't start.
+	-->
+	<dependency>
+	    <groupId>org.jasig.cas</groupId>
+	    <artifactId>cas-server-webapp-support</artifactId>
+	    <version>${cas.version}</version>
+	    <type>jar</type>
+	</dependency>
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-core</artifactId>
+	    <version>3.2.2.RELEASE</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-beans</artifactId>
+	    <version>3.2.2.RELEASE</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-context</artifactId>
+	    <version>3.2.2.RELEASE</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-web</artifactId>
+	    <version>3.2.2.RELEASE</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-webmvc</artifactId>
+	    <version>3.2.2.RELEASE</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>org.jasig.cas</groupId>
+	    <artifactId>cas-server-support-jdbc</artifactId>
+	    <version>${cas.version}</version>
+	    <type>jar</type>
+	</dependency>
+	<dependency>
+	    <groupId>mysql</groupId>
+	    <artifactId>mysql-connector-java</artifactId>
+	    <version>5.1.6</version>
+	    <scope>runtime</scope>
+	</dependency>
+	<dependency>
+	    <groupId>org.hibernate</groupId>
+	    <artifactId>hibernate-core</artifactId>
+	    <version>${hibernate.core.version}</version>
+	    <type>jar</type>
+	    <scope>runtime</scope>
+	</dependency>
+	<dependency>
+	    <groupId>org.hibernate</groupId>
+	    <artifactId>hibernate-entitymanager</artifactId>
+	    <version>${hibernate.core.version}</version>
+	    <type>jar</type>
+	    <scope>runtime</scope>
+	</dependency>
+	<!-- TODO: required by slf4j/log4j ?-->
+	<dependency>
+	    <groupId>xml-apis</groupId>
+	    <artifactId>xml-apis</artifactId>
+	    <version>1.4.01</version>
+	</dependency>
+	<!-- TODO: review the use of commons-codec, newer jre version might support base64, no need for an external lib? -->
+	<dependency>
+	    <groupId>commons-codec</groupId>
+	    <artifactId>commons-codec</artifactId>
+	    <version>1.4</version>
+	    <type>jar</type>
+	    <scope>compile</scope>
+	</dependency>
+	<!-- TODO: review the use of saml in source code and (most likely REMOVE this dependency) -->
+	<dependency>
+	    <groupId>org.jasig.cas</groupId>
+	    <artifactId>cas-server-support-saml</artifactId>
+	    <version>${cas.version}</version>
+	    <type>jar</type>
+	</dependency>
+
+	<dependency>
+	    <groupId>org.jasig.cas</groupId>
+	    <artifactId>cas-server-core</artifactId>
+	    <version>${cas.version}</version>
+	    <type>jar</type>
+	</dependency>
+
+	<dependency>
+	    <groupId>org.jasig.cas</groupId>
+	    <artifactId>cas-server-support-generic</artifactId>
+	    <version>${cas.version}</version>
+	    <type>jar</type>
+	    <scope>runtime</scope>
+	</dependency>
+	<dependency>
+	    <groupId>org.jasig.cas</groupId>
+	    <artifactId>cas-server-integration-restlet</artifactId>
+	    <version>${cas.version}</version>
+	    <type>jar</type>
+	</dependency>
 
     </dependencies>
 
     <properties>
         <cas.version>4.0.1</cas.version>
+	<hibernate.core.version>4.1.0.Final</hibernate.core.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -61,5 +181,16 @@
             <id>sonatype-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
+	<repository>
+	    <id>jasig-developer-repo</id>
+	    <name>Jasig developer repository</name>
+	    <url>http://developer.jasig.org/repo/content/groups/m2-legacy/</url>
+	    <releases>
+		<enabled>true</enabled>
+	    </releases>
+	    <snapshots>
+		<enabled>false</enabled>
+	    </snapshots>
+	</repository>
     </repositories>
 </project>
