@@ -62,6 +62,7 @@
                    -->
                 <entry key-ref="proxyAuthenticationHandler" value-ref="proxyPrincipalResolver" />
                 <entry key-ref="primaryAuthenticationHandler" value-ref="primaryPrincipalResolver" />
+		<entry key-ref="secondaryAuthenticationHandler" value-ref="primaryPrincipalResolver" />
             </map>
         </constructor-arg>
 
@@ -134,6 +135,15 @@
 	<property name="password" value="${userStore.db.password}"/>
 	<property name="idleConnectionTestPeriod" value="${userStore.db.idleConnectionTestPeriod}"/>
 	<property name="automaticTestTable" value="${userStore.db.automaticTestTable}"/>
+    </bean>
+
+    <bean id="secondaryAuthenticationHandler"
+	  class="org.jasig.cas.authentication.AcceptUsersAuthenticationHandler">
+	<property name="users">
+	    <map>
+		<entry key="casuser" value="Mellon"/>
+	    </map>
+	</property>
     </bean>
 
     <!-- Required for proxy ticket mechanism -->
