@@ -105,12 +105,26 @@
        | * org.jasig.cas.support.spnego.authentication.handler.support.JCIFSSpnegoAuthenticationHandler
        -->
     <bean id="primaryAuthenticationHandler"
-          class="org.jasig.cas.authentication.AcceptUsersAuthenticationHandler">
-        <property name="users">
-            <map>
-                <entry key="casuser" value="Mellon"/>
-            </map>
-        </property>
+	  class="org.jasig.cas.adaptors.jdbc.QueryDatabaseAuthenticationHandler">
+	<property name="dataSource" ref="userStoreDataSource"/>
+	<property name="sql" value="${userStore.password.sql.query}"/>
+	<property name="passwordEncoder">
+	    <bean class="au.org.ala.cas.encoding.MyPasswordEncoder">
+		<property name="algorithm" value="${userStore.password.encoding.algorithm}"/>
+		<property name="base64Encoding" value="${userStore.password.encoding.base64}"/>
+		<property name="salt" value="${userStore.password.encoding.salt}"/>
+	    </bean>
+	</property>
+    </bean>
+
+    <!-- User Store Data source definition -->
+    <bean id="userStoreDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+	<property name="driverClass" value="${userStore.db.driverClassName}"/>
+	<property name="jdbcUrl" value="${userStore.db.url}"/>
+	<property name="user" value="${userStore.db.username}"/>
+	<property name="password" value="${userStore.db.password}"/>
+	<property name="idleConnectionTestPeriod" value="${userStore.db.idleConnectionTestPeriod}"/>
+	<property name="automaticTestTable" value="${userStore.db.automaticTestTable}"/>
     </bean>
 
     <!-- Required for proxy ticket mechanism -->
