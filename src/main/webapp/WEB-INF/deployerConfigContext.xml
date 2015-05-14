@@ -131,6 +131,10 @@
     <bean id="proxyPrincipalResolver"
           class="org.jasig.cas.authentication.principal.BasicPrincipalResolver" />
 
+    <sec:user-service id="userDetailsService">
+	<sec:user name="admin" password="notused" authorities="ROLE_ADMIN" />
+    </sec:user-service>
+
     <!--
        | Resolves a principal from a credential using an attribute repository that is configured to resolve
        | against a deployer-specific store (e.g. LDAP).
