@@ -143,7 +143,7 @@
     <!--
     Bean that defines the attributes that a service may return.  This example uses the Stub/Mock version.  A real implementation
     may go against a database or LDAP server.  The id should remain "attributeRepository" though.
-    +-->
+
     <bean id="attributeRepository" class="org.jasig.services.persondir.support.StubPersonAttributeDao"
             p:backingMap-ref="attrRepoBackingMap" />
     
@@ -152,6 +152,20 @@
         <entry key="eduPersonAffiliation" value="eduPersonAffiliation" /> 
         <entry key="groupMembership" value="groupMembership" />
     </util:map>
+    +-->
+
+    <bean id="attributeRepository"
+	  class="org.jasig.services.persondir.support.jdbc.MyMultiRowJdbcPersonAttributeDao">
+	<constructor-arg index="0" ref="userStoreDataSource" />
+	<constructor-arg index="1" value="${userStore.attribute.sql.query}" />
+	<property name="nameValueColumnMappings">
+	    <map>
+		<entry key='key'>
+		    <value>value</value>
+		</entry>
+	    </map>
+	</property>
+    </bean>
 
     <!-- 
     Sample, in-memory data store for the ServiceRegistry. A real implementation
