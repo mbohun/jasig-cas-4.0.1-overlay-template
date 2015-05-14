@@ -27,6 +27,9 @@
                         <overlay>
                             <groupId>org.jasig.cas</groupId>
                             <artifactId>cas-server-webapp</artifactId>
+			    <excludes>
+				<exclude>WEB-INF/cas.properties</exclude>
+			    </excludes>
                         </overlay>
                     </overlays>
                 </configuration>
