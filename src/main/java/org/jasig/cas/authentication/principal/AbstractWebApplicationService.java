@@ -1,7 +1,20 @@
 /*
- * Copyright 2007 The JA-SIG Collaborative. All rights reserved. See license
- * distributed with this file and available online at
- * http://www.uportal.org/license.html
+ * Licensed to Jasig under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work
+ * for additional information regarding copyright ownership.
+ * Jasig licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License.  You may obtain a
+ * copy of the License at the following location:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.jasig.cas.authentication.principal;
 
@@ -9,11 +22,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jasig.cas.util.DefaultUniqueTicketIdGenerator;
-import org.jasig.cas.util.HttpClient;
-import org.jasig.cas.util.SamlDateUtils;
-import org.jasig.cas.support.saml.authentication.principal.SamlService;
-import org.jasig.cas.util.UniqueTicketIdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,20 +29,16 @@ import org.slf4j.LoggerFactory;
  * Abstract implementation of a WebApplicationService.
  *
  * @author Scott Battaglia
- * @version $Revision: 1.3 $ $Date: 2007/04/19 20:13:01 $
  * @since 3.1
- *
- * Modified matches() and equals() to do a string match where html encoded spaces (%20) are treated as equivalent to a space.
- * Peter Flemming | 3-Mar-2012 | Atlas of Living Australia
  */
-public abstract class AbstractWebApplicationService implements WebApplicationService {
+public abstract class AbstractWebApplicationService implements SingleLogoutService {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(SamlService.class); // TODO: check this
+    private static final long serialVersionUID = 610105280927740076L;
+
+    /** Logger instance. **/
+    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractWebApplicationService.class);
 
     private static final Map<String, Object> EMPTY_MAP = Collections.unmodifiableMap(new HashMap<String, Object>());
-
-    private static final UniqueTicketIdGenerator GENERATOR = new DefaultUniqueTicketIdGenerator();
-
     /** The id of the service. */
     private final String id;
 
@@ -47,16 +51,13 @@ public abstract class AbstractWebApplicationService implements WebApplicationSer
 
     private boolean loggedOutAlready = false;
 
-    private final HttpClient httpClient;
-
-    protected AbstractWebApplicationService(final String id, final String originalUrl, final String artifactId, final HttpClient httpClient) {
+    protected AbstractWebApplicationService(final String id, final String originalUrl,
+            final String artifactId) {
         this.id = id;
         this.originalUrl = originalUrl;
         this.artifactId = artifactId;
-        this.httpClient = httpClient;
     }
 
-    @Override
     public final String toString() {
         return this.id;
     }
@@ -94,11 +95,16 @@ public abstract class AbstractWebApplicationService implements WebApplicationSer
             + url.substring(questionMarkPosition);
     }
 
+    /**
+     * Return the original url provided (as <code>service</code> or <code>targetService</code> request parameter).
+     * Used to reconstruct the redirect url.
+     *
+     * @return the original url provided.
+     */
     public final String getOriginalUrl() {
         return this.originalUrl;
     }
 
-    @Override
     public boolean equals(final Object object) {
         if (object == null) {
             return false;
@@ -113,7 +119,6 @@ public abstract class AbstractWebApplicationService implements WebApplicationSer
         return false;
     }
 
-    @Override
     public int hashCode() {
         final int prime = 41;
         int result = 1;
@@ -131,29 +136,25 @@ public abstract class AbstractWebApplicationService implements WebApplicationSer
     }
 
     public boolean matches(final Service service) {
-        return equalIgnoreWhitespace(this.id, service.getId());
+	return equalIgnoreWhitespace(this.id, service.getId());
     }
 
-    public synchronized boolean logOutOfService(final String sessionIdentifier) {
-        if (this.loggedOutAlready) {
-            return true;
-        }
+    /**
+     * Return if the service is already logged out.
+     *
+     * @return if the service is already logged out.
+     */
+    public boolean isLoggedOutAlready() {
+        return loggedOutAlready;
+    }
 
-        LOG.debug("Sending logout request for: " + getId());
-
-        final String logoutRequest = "<samlp:LogoutRequest xmlns:samlp=\"urn:oasis:names:tc:SAML:2.0:protocol\" ID=\""
-            + GENERATOR.getNewTicketId("LR")
-            + "\" Version=\"2.0\" IssueInstant=\"" + SamlDateUtils.getCurrentDateAndTime()
-            + "\"><saml:NameID xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\">@NOT_USED@</saml:NameID><samlp:SessionIndex>"
-            + sessionIdentifier + "</samlp:SessionIndex></samlp:LogoutRequest>";
-
-        this.loggedOutAlready = true;
-
-        if (this.httpClient != null) {
-            return this.httpClient.sendMessageToEndPoint(getOriginalUrl(), logoutRequest, true);
-        }
-
-        return false;
+    /**
+     * Set if the service is already logged out.
+     *
+     * @param loggedOutAlready if the service is already logged out.
+     */
+    public final void setLoggedOutAlready(final boolean loggedOutAlready) {
+        this.loggedOutAlready = loggedOutAlready;
     }
 
     private boolean equalIgnoreWhitespace(String s1, String s2) {
