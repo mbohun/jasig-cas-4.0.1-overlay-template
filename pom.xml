@@ -154,7 +154,7 @@
 	    <groupId>org.jasig.cas</groupId>
 	    <artifactId>cas-server-core</artifactId>
 	    <version>${cas.version}</version>
-	    <type>jar</type>
+	    <type>test-jar</type>
 	</dependency>
 
 	<dependency>
