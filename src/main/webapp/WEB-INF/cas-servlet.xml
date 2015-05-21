@@ -31,6 +31,11 @@
 
   <import resource="spring-configuration/propertyFileConfigurer.xml"/>
 
+  <bean id="clientAction" class="org.jasig.cas.support.pac4j.web.flow.ClientAction">
+      <constructor-arg index="0" ref="centralAuthenticationService"/>
+      <constructor-arg index="1" ref="clients"/>
+  </bean>
+
   <!-- Theme Resolver -->
   <bean id="themeResolver" class="org.jasig.cas.services.web.ServiceThemeResolver"
         p:defaultThemeName="${cas.themeResolver.defaultThemeName}"

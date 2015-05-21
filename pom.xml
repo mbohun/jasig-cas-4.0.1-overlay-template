@@ -171,10 +171,33 @@
 	    <type>jar</type>
 	</dependency>
 
+	<!-- TODO: verify which pac4j modules we really need -->
+	<dependency>
+	    <groupId>org.jasig.cas</groupId>
+	    <artifactId>cas-server-support-pac4j</artifactId>
+	    <version>${cas.version}</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.pac4j</groupId>
+	    <artifactId>pac4j-core</artifactId>
+	    <version>${pac4j.version}</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.pac4j</groupId>
+	    <artifactId>pac4j-oauth</artifactId>
+	    <version>${pac4j.version}</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.pac4j</groupId>
+	    <artifactId>pac4j-openid</artifactId>
+	    <version>${pac4j.version}</version>
+	</dependency>
+
     </dependencies>
 
     <properties>
         <cas.version>4.0.1</cas.version>
+	<pac4j.version>1.4.2-SNAPSHOT</pac4j.version>
 	<hibernate.core.version>4.1.0.Final</hibernate.core.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
