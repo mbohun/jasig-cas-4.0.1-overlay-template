@@ -203,6 +203,8 @@
 	    <property name="serviceId"       value="^(https?|imaps?)://.*" />
 	    <property name="evaluationOrder" value="10000001" />
 
+	    <!-- TODO: usernameAttribute needs a fix to map ALL possible email field names: email, email-address, etc. -->
+	    <property name="usernameAttribute" value="email" />
             <property name="allowedAttributes">
 		<list>
 		    <!-- shared attributes: facebook, google -->
