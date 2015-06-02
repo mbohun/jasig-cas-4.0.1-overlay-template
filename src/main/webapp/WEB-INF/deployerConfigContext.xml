@@ -246,10 +246,6 @@
 
 		</list>
 	    </property>
-	    
-	    <property name="attributeFilter">
-		<bean class="org.jasig.cas.services.support.ALARegisteredServiceAttributeFilter" />
-	    </property>
 
 	    <!-- TODO/NOTE: in jasig cas-4.1.0-SNAPSHOT they added concept of AttributeReleasePolicy
 	    <property name="attributeReleasePolicy">
