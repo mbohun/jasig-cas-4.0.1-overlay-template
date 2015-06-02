@@ -139,7 +139,7 @@
     </bean>
 
     <bean id="secondaryAuthenticationHandler"
-	  class="org.jasig.cas.support.pac4j.authentication.handler.support.ClientAuthenticationHandler">
+	  class="org.jasig.cas.support.pac4j.authentication.handler.support.ALAClientAuthenticationHandler">
 	<constructor-arg index="0" ref="clients"/>
     </bean>
 
@@ -207,6 +207,17 @@
 	    <property name="usernameAttribute" value="email" />
             <property name="allowedAttributes">
 		<list>
+
+		    <!-- NOTE: this is (hopefully) only a note/reminder, these are the ALA client expected
+			 attributes we are trying to return from:
+			 org.jasig.cas.services.support.ALARegisteredServiceAttributeFilter
+		    -->
+		    <value>email</value>
+		    <value>firstname</value>
+		    <value>lastname</value>
+		    <value>userid</value>
+		    <value>authority</value>
+
 		    <!-- shared attributes: facebook, google -->
 		    <value>email</value>
 
@@ -235,6 +246,16 @@
 
 		</list>
 	    </property>
+	    
+	    <property name="attributeFilter">
+		<bean class="org.jasig.cas.services.support.ALARegisteredServiceAttributeFilter" />
+	    </property>
+
+	    <!-- TODO/NOTE: in jasig cas-4.1.0-SNAPSHOT they added concept of AttributeReleasePolicy
+	    <property name="attributeReleasePolicy">
+		<bean class="org.jasig.cas.services.ReturnAllAttributeReleasePolicy" />
+	    </property>
+	    -->
 	</bean>
     </util:list>
     
