@@ -141,6 +141,7 @@
     <bean id="secondaryAuthenticationHandler"
 	  class="org.jasig.cas.support.pac4j.authentication.handler.support.ALAClientAuthenticationHandler">
 	<constructor-arg index="0" ref="clients"/>
+	<constructor-arg index="1" ref="primaryPrincipalResolver"/>
     </bean>
 
     <!-- Required for proxy ticket mechanism -->

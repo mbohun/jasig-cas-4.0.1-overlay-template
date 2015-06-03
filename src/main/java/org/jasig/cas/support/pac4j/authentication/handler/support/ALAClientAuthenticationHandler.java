@@ -28,7 +28,7 @@ import org.jasig.cas.authentication.HandlerResult;
 import org.jasig.cas.authentication.PreventedException;
 import org.jasig.cas.authentication.handler.support.AbstractPreAndPostProcessingAuthenticationHandler;
 import org.jasig.cas.authentication.Credential;
-import org.jasig.cas.authentication.principal.SimplePrincipal;
+import org.jasig.cas.authentication.principal.PrincipalResolver;
 import org.jasig.cas.support.pac4j.authentication.principal.ClientCredential;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
@@ -53,13 +53,18 @@ public final class ALAClientAuthenticationHandler extends AbstractPreAndPostProc
     @NotNull
     private final Clients clients;
 
+    @NotNull
+    private final PrincipalResolver principalResolver;
+
     /**
      * Define the clients.
      *
      * @param theClients The clients for authentication
      */
-    public ALAClientAuthenticationHandler(final Clients theClients) {
+    public ALAClientAuthenticationHandler(final Clients theClients,
+					  final PrincipalResolver principalResolver) {
         this.clients = theClients;
+	this.principalResolver = principalResolver;
     }
 
     @Override
@@ -84,41 +89,19 @@ public final class ALAClientAuthenticationHandler extends AbstractPreAndPostProc
         logger.debug("userProfile : {}", userProfile);
 
         if (userProfile != null && StringUtils.isNotBlank(userProfile.getTypedId())) {
-	    /*
-	      TODO: here we:
-	      1. take the userProfile.getAttributes() Map (received from facebook/google/twitter/github/etc.)
-	      2. take the email address and check if the user exist in the userdetails DB ()
-	         2.1 if the user does NOT exist we use the givenAttributes Map "automatically" register/create
-		     an ALA user in the userdetails DB and activate her/him (like if the registered manually and confirmed the registration email)
-	      3. from here on we continue using the existing emmet.sp_get_user_attributes(@p_username); where @p_username is the user email
-	         we received from facebook/google/twitter/github/etc.
-	    */
-	    final String email = (String)userProfile.getAttribute("email");
-	    logger.debug("email : {}", email);
-
-	    //NOTE: userProfile.getAttributes() Map is unmodifiable! we need a fresh copy in order to "add" ALA profile attributes
-	    final Map<String, Object> attributes = new HashMap<String, Object>();
-	    //attributes.putAll(userProfile.getAttributes());
-	    
-	    if (email.equals("martin.bohun@gmail.com")) {
-		logger.debug("Setting ALA specific attributes. (userProfile.getTypedId() : {})", userProfile.getTypedId());
-
-		attributes.put("email",     "martin.bohun@gmail.com"); //you need to set email if not copying across Facebook/Google/etc attributes
-		attributes.put("firstname", "Martin");
-		attributes.put("lastname",  "Bohun");
-		attributes.put("userid",    "2");
-		attributes.put("authority", "ROLE_USER");
-	    }
-
-	    logger.debug("(ALA?) userProfile : {}", userProfile);
-	    
             clientCredentials.setUserProfile(userProfile);
+
+	    final String email = (String)userProfile.getAttribute("email");
+	    final Credential alaCredential = new Credential() {
+		    public String getId() {
+			return email;
+		    }
+		};
 
             return new HandlerResult(
                     this,
                     new BasicCredentialMetaData(credential),
-                    new SimplePrincipal(email,
-					Collections.unmodifiableMap(attributes)));
+                    this.principalResolver.resolve(alaCredential)); //TODO: we can't do this, if the user does not exist we have to create the user first
         }
 
         throw new FailedLoginException("Provider did not produce profile for " + clientCredentials);
