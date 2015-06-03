@@ -32,7 +32,6 @@ import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
 import javax.validation.constraints.NotNull;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -69,17 +68,15 @@ public final class GenerateServiceTicketAction extends AbstractAction {
 	    //
 	    // Create ALA specific cookie that any ALA web application can read
 	    //
-	    final HttpServletRequest request = WebUtils.getHttpServletRequest(context);
-
 	    final ServiceTicket st =
 		(ServiceTicket)this.serviceTicketRegistry.getTicket(serviceTicketId);
 
 	    final List<Authentication> authentications =
 		st.getGrantingTicket().getChainedAuthentications();
 
-	    String email = authentications.get(authentications.size() - 1).getPrincipal().getId();
+	    final String email = authentications.get(authentications.size() - 1).getPrincipal().getId();
 
-	    this.alaProxyAuthenticationCookieGenerator.addCookie(request,
+	    this.alaProxyAuthenticationCookieGenerator.addCookie(WebUtils.getHttpServletRequest(context),
 								 WebUtils.getHttpServletResponse(context),
 								 email);
 
