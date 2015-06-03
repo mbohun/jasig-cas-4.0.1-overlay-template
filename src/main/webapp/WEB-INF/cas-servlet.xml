@@ -242,12 +242,13 @@
   <bean id="authenticationExceptionHandler" class="org.jasig.cas.web.flow.AuthenticationExceptionHandler" />
 
   <bean id="generateServiceTicketAction" class="org.jasig.cas.web.flow.GenerateServiceTicketAction"
-        p:centralAuthenticationService-ref="centralAuthenticationService"/>
+        p:centralAuthenticationService-ref="centralAuthenticationService"
+	p:alaProxyAuthenticationCookieGenerator-ref="alaProxyAuthenticationCookieGenerator"
+	p:serviceTicketRegistry-ref="ticketRegistry"/>
 
   <bean id="sendTicketGrantingTicketAction" class="org.jasig.cas.web.flow.SendTicketGrantingTicketAction"
         p:centralAuthenticationService-ref="centralAuthenticationService"
-        p:ticketGrantingTicketCookieGenerator-ref="ticketGrantingTicketCookieGenerator"
-	p:alaProxyAuthenticationCookieGenerator-ref="alaProxyAuthenticationCookieGenerator" />
+        p:ticketGrantingTicketCookieGenerator-ref="ticketGrantingTicketCookieGenerator" />
 
   <bean id="gatewayServicesManagementCheck" class="org.jasig.cas.web.flow.GatewayServicesManagementCheck"
     c:servicesManager-ref="servicesManager" />
