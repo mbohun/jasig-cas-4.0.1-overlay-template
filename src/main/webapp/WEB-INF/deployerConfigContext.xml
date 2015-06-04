@@ -142,6 +142,11 @@
 	  class="org.jasig.cas.support.pac4j.authentication.handler.support.ALAClientAuthenticationHandler">
 	<constructor-arg index="0" ref="clients"/>
 	<constructor-arg index="1" ref="primaryPrincipalResolver"/>
+	<constructor-arg index="2" ref="userCreatorALA"/>
+    </bean>
+
+    <bean id="userCreatorALA"
+	  class="au.org.ala.cas.UserCreatorALA">
     </bean>
 
     <!-- Required for proxy ticket mechanism -->

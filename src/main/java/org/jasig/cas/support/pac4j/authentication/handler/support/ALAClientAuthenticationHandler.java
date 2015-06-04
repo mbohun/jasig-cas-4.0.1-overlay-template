@@ -67,11 +67,11 @@ public final class ALAClientAuthenticationHandler extends AbstractPreAndPostProc
      * @param theClients The clients for authentication
      */
     public ALAClientAuthenticationHandler(final Clients theClients,
-					  final PrincipalResolver principalResolver ) { //,
-					  //final UserCreator userCreator) {
+					  final PrincipalResolver principalResolver,
+					  final UserCreator userCreator) {
         this.clients = theClients;
 	this.principalResolver = principalResolver;
-	this.userCreator = new au.org.ala.cas.UserCreatorALA();
+	this.userCreator = userCreator;
     }
 
     @Override
