@@ -36,6 +36,9 @@ public class UserCreatorALA implements UserCreator {
     @NotNull
     private PasswordEncoder passwordEncoder = new PlainTextPasswordEncoder();
 
+    @NotNull
+    private String userCreatePassword;
+
     /* TODO: add util userAttributes parser later; the parser will encapsulate and hide
      *       all the differences among the attribute formats received from Facebook,
      *       Google, GitHub, LinkedIn, etc.
@@ -43,12 +46,15 @@ public class UserCreatorALA implements UserCreator {
     @Override
     public void createUser(final Map userAttributes) {
 	logger.debug("createUser: {}", userAttributes);
+
+	final String password = this.passwordEncoder.encode(this.userCreatePassword);
+
 	final int rows_affected =
 	    this.jdbcTemplate.update(this.sql,
 				     userAttributes.get("email"),      //email
 				     userAttributes.get("first_name"), //firstname
 				     userAttributes.get("last_name"),  //lastname
-				     "not used",                       //password
+				     password,                         //password
 				     "Canberra",                       //city
 				     "CSIRO",                          //organisation
 				     "test primary usage",             //primaryUserType
@@ -85,5 +91,13 @@ public class UserCreatorALA implements UserCreator {
      */
     public final void setPasswordEncoder(final PasswordEncoder passwordEncoder) {
 	this.passwordEncoder = passwordEncoder;
+    }
+
+    /**
+     * @param userCreatePassword The "default" password (segment) to set
+     * for ALA user created/registered via Delegate Authentication.
+     */
+    public void setUserCreatePassword(final String userCreatePassword) {
+	this.userCreatePassword = userCreatePassword;
     }
 }
