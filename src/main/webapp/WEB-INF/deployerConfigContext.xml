@@ -147,6 +147,17 @@
 
     <bean id="userCreatorALA"
 	  class="au.org.ala.cas.UserCreatorALA">
+	<property name="dataSource" ref="userStoreDataSource"/>
+	<property name="sql" value="${userStore.create.sql.query}"/>
+	<!-- NOTE: at this stage i am not sure if we need a password encoder for automatically generated passwords,
+	     if not remove it later -->
+	<property name="passwordEncoder">
+	    <bean class="au.org.ala.cas.encoding.MyPasswordEncoder">
+		<property name="algorithm" value="${userStore.password.encoding.algorithm}"/>
+		<property name="base64Encoding" value="${userStore.password.encoding.base64}"/>
+		<property name="salt" value="${userStore.password.encoding.salt}"/>
+	    </bean>
+	</property>
     </bean>
 
     <!-- Required for proxy ticket mechanism -->
