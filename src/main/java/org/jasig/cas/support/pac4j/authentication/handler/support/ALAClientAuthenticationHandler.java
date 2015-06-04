@@ -28,11 +28,13 @@ import org.jasig.cas.authentication.HandlerResult;
 import org.jasig.cas.authentication.PreventedException;
 import org.jasig.cas.authentication.handler.support.AbstractPreAndPostProcessingAuthenticationHandler;
 import org.jasig.cas.authentication.Credential;
+import org.jasig.cas.authentication.principal.Principal;
 import org.jasig.cas.authentication.principal.PrincipalResolver;
 import org.jasig.cas.support.pac4j.authentication.principal.ClientCredential;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
 import org.pac4j.core.profile.UserProfile;
+import au.org.ala.cas.UserCreator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
@@ -56,15 +58,20 @@ public final class ALAClientAuthenticationHandler extends AbstractPreAndPostProc
     @NotNull
     private final PrincipalResolver principalResolver;
 
+    @NotNull
+    private final UserCreator userCreator;
+
     /**
      * Define the clients.
      *
      * @param theClients The clients for authentication
      */
     public ALAClientAuthenticationHandler(final Clients theClients,
-					  final PrincipalResolver principalResolver) {
+					  final PrincipalResolver principalResolver ) { //,
+					  //final UserCreator userCreator) {
         this.clients = theClients;
 	this.principalResolver = principalResolver;
+	this.userCreator = new au.org.ala.cas.UserCreatorALA();
     }
 
     @Override
@@ -98,10 +105,26 @@ public final class ALAClientAuthenticationHandler extends AbstractPreAndPostProc
 		    }
 		};
 
-            return new HandlerResult(
-                    this,
-                    new BasicCredentialMetaData(credential),
-                    this.principalResolver.resolve(alaCredential)); //TODO: we can't do this, if the user does not exist we have to create the user first
+	    // get the ALA user attributes from the userdetails DB ("userid", "firstname", "lastname", "authority")
+	    Principal principal = this.principalResolver.resolve(alaCredential);
+
+	    // does the ALA user exist?
+	    if (!principal.getAttributes().containsKey("userid")) { //TODO: make this nice and configurable
+		// create a new ALA user in the userdetails DB
+		logger.debug("user {} not found in ALA userdetails DB, creating new ALA user for: {}.", email, email);
+		this.userCreator.createUser(userProfile.getAttributes()); //TODO: we can check this for failed user creation, to be accurate
+
+		// re-try (we have to retry, because that is how we get the required "userid")
+		principal = this.principalResolver.resolve(alaCredential);
+		if (!principal.getAttributes().containsKey("userid")) {
+		    // we failed to lookup ALA user (most likely because the creation above failed), complain, throw exception, etc.
+		    throw new FailedLoginException("Unable to create ALA user for " + clientCredentials);
+		}
+	    }
+
+            return new HandlerResult(this,
+				     new BasicCredentialMetaData(credential), //TODO: credential or alaCredential?
+				     principal);
         }
 
         throw new FailedLoginException("Provider did not produce profile for " + clientCredentials);
