@@ -1,6 +1,7 @@
 package au.org.ala.cas;
 
 import java.util.Map;
+import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +11,8 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.jasig.cas.authentication.handler.PasswordEncoder;
 import org.jasig.cas.authentication.handler.PlainTextPasswordEncoder;
+
+import au.org.ala.cas.AttributeParser;
 
 /**
  * UserCreatorALA takes user attributes received from Facebook/Google/etc.
@@ -47,13 +50,28 @@ public class UserCreatorALA implements UserCreator {
     public void createUser(final Map userAttributes) {
 	logger.debug("createUser: {}", userAttributes);
 
+	final String email     = AttributeParser.lookup("email",     userAttributes);
+	if (email == null) {
+	    return;
+	}
+
+	final String firstname = AttributeParser.lookup("firstname", userAttributes);
+	if (firstname == null) {
+	    return;
+	}
+
+	final String lastname  = AttributeParser.lookup("lastname",  userAttributes);
+	if (lastname == null) {
+	    return;
+	}
+
 	final String password = this.passwordEncoder.encode(this.userCreatePassword);
 
 	final int rows_affected =
 	    this.jdbcTemplate.update(this.sql,
-				     userAttributes.get("email"),      //email
-				     userAttributes.get("first_name"), //firstname
-				     userAttributes.get("last_name"),  //lastname
+				     email,                            //email
+				     firstname,                        //firstname
+				     lastname,                         //lastname
 				     password,                         //password
 				     "Canberra",                       //city
 				     "CSIRO",                          //organisation

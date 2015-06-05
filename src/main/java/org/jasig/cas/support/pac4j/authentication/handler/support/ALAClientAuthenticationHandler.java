@@ -38,6 +38,7 @@ import au.org.ala.cas.UserCreator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
+import au.org.ala.cas.AttributeParser;
 
 /**
  * This handler authenticates the client credentials : it uses them to get the user profile returned by the provider
@@ -98,7 +99,11 @@ public final class ALAClientAuthenticationHandler extends AbstractPreAndPostProc
         if (userProfile != null && StringUtils.isNotBlank(userProfile.getTypedId())) {
             clientCredentials.setUserProfile(userProfile);
 
-	    final String email = (String)userProfile.getAttribute("email");
+	    final String email = AttributeParser.lookup("email", userProfile.getAttributes());
+	    if (email==null) {
+		throw new FailedLoginException("No email address found; email address is required to lookup (and/or create) ALA user!");
+	    }
+
 	    final Credential alaCredential = new Credential() {
 		    public String getId() {
 			return email;
