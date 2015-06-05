@@ -6,7 +6,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.jasig.services.persondir.IPersonAttributes;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * Sub-class of {@link org.jasig.services.persondir.support.jdbc.MultiRowJdbcPersonAttributeDao} 
@@ -19,12 +19,12 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
  */
 public class MyMultiRowJdbcPersonAttributeDao extends MultiRowJdbcPersonAttributeDao {
 
-    private final SimpleJdbcTemplate simpleJdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
     private final String sql;
     
     public MyMultiRowJdbcPersonAttributeDao(DataSource ds, String sql) {
 		super(ds, sql);
-		this.simpleJdbcTemplate = new SimpleJdbcTemplate(ds);
+		this.jdbcTemplate = new JdbcTemplate(ds);
 		this.sql = sql;
 	}
 
@@ -32,7 +32,7 @@ public class MyMultiRowJdbcPersonAttributeDao extends MultiRowJdbcPersonAttribut
     protected List<IPersonAttributes> getPeopleForQuery(PartialWhereClause queryBuilder, String queryUserName) {
         
         //Execute the query
-    	List<Map<String, Object>> results = this.simpleJdbcTemplate.queryForList(sql, new Object[] { queryUserName });
+        List<Map<String, Object>> results = this.jdbcTemplate.queryForList(sql, queryUserName);
     	
        
         if (this.logger.isDebugEnabled()) {
