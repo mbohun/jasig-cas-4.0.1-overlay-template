@@ -44,7 +44,7 @@
     <bean id="facebook" class="org.pac4j.oauth.client.FacebookClient">
 	<property name="key" value="${pac4j.facebook.consumer.key}" />
 	<property name="secret" value="${pac4j.facebook.consumer.secret}" />
-	<property name="scope" value="email,user_location" />
+	<property name="scope" value="email" />
 	<property name="fields" value="id,name,first_name,last_name,verified,email,location" />
     </bean>
 
