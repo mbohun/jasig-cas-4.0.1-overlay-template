@@ -13,6 +13,7 @@ import org.jasig.cas.authentication.handler.PasswordEncoder;
 import org.jasig.cas.authentication.handler.PlainTextPasswordEncoder;
 
 import au.org.ala.cas.AttributeParser;
+import org.pac4j.core.profile.UserProfile;
 
 /**
  * UserCreatorALA takes user attributes received from Facebook/Google/etc.
@@ -47,20 +48,20 @@ public class UserCreatorALA implements UserCreator {
      *       Google, GitHub, LinkedIn, etc.
      */
     @Override
-    public void createUser(final Map userAttributes) {
-	logger.debug("createUser: {}", userAttributes);
+    public void createUser(final UserProfile userProfile) {
+	logger.debug("createUser: {}", userProfile);
 
-	final String email     = AttributeParser.lookup("email",     userAttributes);
+	final String email     = AttributeParser.lookup("email",     userProfile);
 	if (email == null) {
 	    return;
 	}
 
-	final String firstname = AttributeParser.lookup("firstname", userAttributes);
+	final String firstname = AttributeParser.lookup("firstname", userProfile);
 	if (firstname == null) {
 	    return;
 	}
 
-	final String lastname  = AttributeParser.lookup("lastname",  userAttributes);
+	final String lastname  = AttributeParser.lookup("lastname",  userProfile);
 	if (lastname == null) {
 	    return;
 	}

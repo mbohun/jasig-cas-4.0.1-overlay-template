@@ -1,6 +1,6 @@
 package au.org.ala.cas;
 
-import java.util.Map;
+import org.pac4j.core.profile.UserProfile;
 
 /**
  * User creation interface. UserCreator takes user attributes received from
@@ -12,5 +12,5 @@ import java.util.Map;
  * @since 4.0.1
  */
 public interface UserCreator {
-    public void createUser(final Map userAttributes);
+    public void createUser(final UserProfile userProfile);
 }

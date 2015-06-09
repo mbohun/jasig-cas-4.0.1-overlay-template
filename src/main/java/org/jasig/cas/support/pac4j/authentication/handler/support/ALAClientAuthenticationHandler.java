@@ -99,7 +99,7 @@ public final class ALAClientAuthenticationHandler extends AbstractPreAndPostProc
         if (userProfile != null && StringUtils.isNotBlank(userProfile.getTypedId())) {
             clientCredentials.setUserProfile(userProfile);
 
-	    final String email = AttributeParser.lookup("email", userProfile.getAttributes());
+	    final String email = AttributeParser.lookup("email", userProfile);
 	    if (email==null) {
 		throw new FailedLoginException("No email address found; email address is required to lookup (and/or create) ALA user!");
 	    }
@@ -117,7 +117,7 @@ public final class ALAClientAuthenticationHandler extends AbstractPreAndPostProc
 	    if (!principal.getAttributes().containsKey("userid")) { //TODO: make this nice and configurable
 		// create a new ALA user in the userdetails DB
 		logger.debug("user {} not found in ALA userdetails DB, creating new ALA user for: {}.", email, email);
-		this.userCreator.createUser(userProfile.getAttributes()); //TODO: we can check this for failed user creation, to be accurate
+		this.userCreator.createUser(userProfile); //TODO: we can check this for failed user creation, to be accurate
 
 		// re-try (we have to retry, because that is how we get the required "userid")
 		principal = this.principalResolver.resolve(alaCredential);

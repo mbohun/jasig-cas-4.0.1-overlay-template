@@ -1,10 +1,12 @@
 package au.org.ala.cas;
 
+import org.pac4j.core.profile.UserProfile;
 import java.util.Map;
 import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("unchecked")
 public class AttributeParser {
 
     private AttributeParser() {} //this is just a stateless helper for now
@@ -17,7 +19,8 @@ public class AttributeParser {
 	    }
 	};
 
-    static final public String lookup(final String alaName, final Map userAttributes) {
+    static final public String lookup(final String alaName, final UserProfile userProfile) {
+	final Map userAttributes = userProfile.getAttributes();
 	final String[] alias = (String[])ATTRIBUTE_NAMES_LOOKUP.get(alaName);
 	for (int i = 0; i < alias.length; i++) {
 	    final Object match = userAttributes.get(alias[i]);
