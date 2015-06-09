@@ -155,7 +155,7 @@
 <br />
 <a href="${TwitterClientUrl}">Authenticate with Twitter</a><br />
 <br />
-<a href="${GitHubClientUrl}">Authenticate with GitHub</a><br />
+<a href="${GitHubClientUrl}&scope=user:email">Authenticate with GitHub</a><br />
 <br />
 <a href="${Google2ClientUrl}">Authenticate with Google</a><br />
 <br />
