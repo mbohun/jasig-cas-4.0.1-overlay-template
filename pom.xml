@@ -142,6 +142,16 @@
 	    <type>jar</type>
 	    <scope>compile</scope>
 	</dependency>
+	<!-- NOTE: older version of JSON.org is used because the newer version 20141113 was throwing
+	     Throwable: "Exception:org/json/JSONArray : Unsupported major.minor version 52.0 (unable to load class org.json.JSONArray)"
+	     (or we can build our own from https://github.com/douglascrockford/JSON-java and upload it into ALA maven repo)
+	-->
+	<dependency>
+	    <groupId>org.json</groupId>
+	    <artifactId>json</artifactId>
+	    <version>20140107</version>
+	    <type>jar</type>
+	</dependency>
 	<!-- TODO: review the use of saml in source code and (most likely REMOVE this dependency) -->
 	<dependency>
 	    <groupId>org.jasig.cas</groupId>
