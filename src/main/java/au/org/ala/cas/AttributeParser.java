@@ -57,12 +57,6 @@ public class AttributeParser {
 		//          use the access_token to REST HTTP GET https://api.github.com/user/emails?access_token=${access_token} the
 		//          array/set of GitHub user's emails, and use the email address that is: primary AND verified.
 		//
-		final String profileEmail = (String)userAttributes.get("email");
-		logger.debug("GitHub profile email: {} of length: {}", profileEmail, profileEmail.length());
-		if (profileEmail != null && (profileEmail.length() > 0)) {
-		    logger.debug("using GitHub profile email: {}", profileEmail);
-		    return profileEmail;
-		}
 
 		// If the GitHub user set Public email to: "Don't show my email address" we have to use the access_token to do
 		// a REST call to get an array/set of user emails.
