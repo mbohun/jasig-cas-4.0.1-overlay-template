@@ -42,9 +42,7 @@ public class AttributeParser {
 
 	if (profileType.equals("GitHubProfile")) {
 	    if (alaName.equals("email")) {
-		// NOTE: first check if we got an email address in the user attributes; this is the case when GitHub user set an email
-		//       address in Public profile -> Public email.
-		//       WARNING/HOWEVER: as of today (2015-06-10) GitHub is allowing to set/configure an UNVERIFIED email address in
+		//       WARNING: as of today (2015-06-10) GitHub is allowing to set/configure an UNVERIFIED email address in
 		//       the Public profile -> Public email; this seems to allow for (at least 2 problematic scenarios):
 		//       1. abuse ALA with unverified GitHub emails, BUT the next one is much scarier:
 		//       2. a GitHub user (attacker), say myself (mbohun/martin.bohun@gmail.com) can add to his GitHub profile Emails
@@ -58,9 +56,6 @@ public class AttributeParser {
 		//          array/set of GitHub user's emails, and use the email address that is: primary AND verified.
 		//
 
-		// If the GitHub user set Public email to: "Don't show my email address" we have to use the access_token to do
-		// a REST call to get an array/set of user emails.
-		//
 		final String githubAccessToken = (String)userAttributes.get("access_token");
 		if (githubAccessToken == null) {
 		    logger.debug("can't get a valid GitHub access_token!");
@@ -95,31 +90,39 @@ public class AttributeParser {
 		// we did NOT find an email? not sure how likely is that, maybe later: we did NOT find any VERIFIED email
 
 	    } else if (alaName.equals("firstname")) {
-		//TODO: GitHub name can be an empty string; what to do/use in such case? set the firstname/lastname
-		//      to the GitHub user name (as in use something UNIQUE that HAS to be set/present)?
-
-		//TODO: we can use StringTokenizer for first/last name parsing
 		final String name = (String)userAttributes.get("name");
-		final int separator = name.indexOf(" ");
-		if (-1 == separator) {
-		    return name; // this person uses only one string name
+		logger.debug("getting firstname from name: {}", name);
+
+		if ((name == null) || (name.length() == 0)) {
+		    return (String)userAttributes.get("login");
 		}
 
-		final String firstname = name.substring(0, separator);
-		logger.debug("firstname: {}", firstname);
-		return firstname;
+		final String[] nameStrings = name.split("\\s");
+		return nameStrings[0];
 
 	    } else if (alaName.equals("lastname")) {
-		//TODO: we can use StringTokenizer for first/last name parsing
 		final String name = (String)userAttributes.get("name");
-		final int separator = name.indexOf(" ");
-		if (-1 == separator) {
-		    return name; // this person uses only one string name
+		logger.debug("getting lastname from name: {}", name);
+
+		if ((name == null) || (name.length() == 0)) {
+		    return (String)userAttributes.get("login");
 		}
 
-		final String lastname = name.substring(separator + 1);
-		logger.debug("lastname: {}", lastname);
-		return lastname;
+		final String[] nameStrings = name.split("\\s");
+		logger.debug("nameStrings: {}, nameStrings.length: {}", nameStrings, nameStrings.length);
+
+		if (nameStrings.length == 1) {
+		    return nameStrings[0];
+
+		} else {
+		    final StringBuffer sb = new StringBuffer();
+		    for (int i = 1; i < nameStrings.length; i++) {
+			sb.append(nameStrings[i]);
+			sb.append(" ");
+		    }
+		    return sb.toString().trim(); //trim the trailing white space at the end
+
+		}
 
 	    } else {
 		logger.debug("error, unknown attribute: {} requested!", alaName);
