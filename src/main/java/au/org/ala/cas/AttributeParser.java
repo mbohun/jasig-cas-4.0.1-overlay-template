@@ -90,39 +90,12 @@ public class AttributeParser {
 		// we did NOT find an email? not sure how likely is that, maybe later: we did NOT find any VERIFIED email
 
 	    } else if (alaName.equals("firstname")) {
-		final String name = (String)userAttributes.get("name");
-		logger.debug("getting firstname from name: {}", name);
-
-		if ((name == null) || (name.length() == 0)) {
-		    return (String)userAttributes.get("login");
-		}
-
-		final String[] nameStrings = name.split("\\s");
-		return nameStrings[0];
+		return AttributeParser.extractFirstName((String)userAttributes.get("name"),
+							(String)userAttributes.get("login"));
 
 	    } else if (alaName.equals("lastname")) {
-		final String name = (String)userAttributes.get("name");
-		logger.debug("getting lastname from name: {}", name);
-
-		if ((name == null) || (name.length() == 0)) {
-		    return (String)userAttributes.get("login");
-		}
-
-		final String[] nameStrings = name.split("\\s");
-		logger.debug("nameStrings: {}, nameStrings.length: {}", nameStrings, nameStrings.length);
-
-		if (nameStrings.length == 1) {
-		    return nameStrings[0];
-
-		} else {
-		    final StringBuffer sb = new StringBuffer();
-		    for (int i = 1; i < nameStrings.length; i++) {
-			sb.append(nameStrings[i]);
-			sb.append(" ");
-		    }
-		    return sb.toString().trim(); //trim the trailing white space at the end
-
-		}
+		return AttributeParser.extractLastName((String)userAttributes.get("name"),
+						       (String)userAttributes.get("login"));
 
 	    } else {
 		logger.debug("error, unknown attribute: {} requested!", alaName);
@@ -139,6 +112,23 @@ public class AttributeParser {
 		if (match != null) {
 		    return (String)match;
 		}
+	    }
+
+	} else if (profileType.equals("TwitterProfile")) {
+	    if (alaName.equals("email")) {
+		return (String)userAttributes.get("email");
+
+	    } else if (alaName.equals("firstname")) {
+		return AttributeParser.extractFirstName((String)userAttributes.get("name"),
+							(String)userAttributes.get("screen_name"));
+
+	    } else if (alaName.equals("lastname")) {
+		return AttributeParser.extractLastName((String)userAttributes.get("name"),
+						       (String)userAttributes.get("screen_name"));
+
+	    } else {
+		logger.debug("error, unknown attribute: {} requested!", alaName);
+		return null;
 	    }
 
 	} else {
@@ -187,5 +177,40 @@ public class AttributeParser {
 	}
 
 	return null;
+    }
+
+    static String extractFirstName(final String name, final String defaultValue) {
+	logger.debug("getting firstname from name: {}", name);
+
+	if ((name == null) || (name.length() == 0)) {
+	    return defaultValue;
+	}
+
+	final String[] nameStrings = name.split("\\s");
+	return nameStrings[0];
+    }
+
+    static String extractLastName(final String name, final String defaultValue) {
+	logger.debug("getting lastname from name: {}", name);
+
+	if ((name == null) || (name.length() == 0)) {
+	    return defaultValue;
+	}
+
+	final String[] nameStrings = name.split("\\s");
+	logger.debug("nameStrings: {}, nameStrings.length: {}", nameStrings, nameStrings.length);
+
+	if (nameStrings.length == 1) {
+	    return nameStrings[0];
+
+	} else {
+	    final StringBuffer sb = new StringBuffer();
+	    for (int i = 1; i < nameStrings.length; i++) {
+		sb.append(nameStrings[i]);
+		sb.append(" ");
+	    }
+	    return sb.toString().trim(); //trim the trailing white space at the end
+
+	}
     }
 }
