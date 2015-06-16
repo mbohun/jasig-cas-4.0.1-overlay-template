@@ -161,3 +161,8 @@
 <br />
 <a href="${LinkedIn2ClientUrl}">Authenticate with LinkedIn</a><br />
 <br />
+<!-- NOTE: in order to access the email address you need to request the OAuth scope 'wl.emails';
+           pac4j 1.4.2-SNAPSHOT has currently (as of 2015-06-13) hardcoded scope 'wl.basic'
+-->
+<a href="${WindowsLiveClientUrl}&scope=wl.emails">Authenticate with Windows Live</a><br />
+<br />

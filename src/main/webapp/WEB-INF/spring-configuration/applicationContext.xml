@@ -70,6 +70,11 @@
 	<property name="scope" value="r_emailaddress" />
     </bean>
 
+    <bean id="windows" class="org.pac4j.oauth.client.WindowsLiveClient">
+	<property name="key" value="${pac4j.windows.consumer.key}" />
+	<property name="secret" value="${pac4j.windows.consumer.secret}" />
+    </bean>
+
     <bean id="clients" class="org.pac4j.core.client.Clients">
 	<property name="callbackUrl" value="${pac4j.callback.url}" />
 	<property name="clients">
@@ -79,6 +84,7 @@
 		<ref bean="github" />
 		<ref bean="google" />
 		<ref bean="linkedin" />
+		<ref bean="windows" />
 	    </list>
 	</property>
     </bean>

@@ -24,6 +24,7 @@ public class AttributeParser {
 
     static final Map ATTRIBUTE_NAMES_LOOKUP = new HashMap() {
 	    {   //  ALA                       facebook,     google,        linkedin
+		//                            win live
 		put("email",     new String[]{"email",      "email",       "email-address"});
 		put("firstname", new String[]{"first_name", "given_name",  "first-name"});
 		put("lastname",  new String[]{"last_name",  "family_name", "last-name"});
@@ -104,7 +105,8 @@ public class AttributeParser {
 
 	} else if (profileType.equals("FacebookProfile")
 		   || profileType.equals("Google2Profile")
-		   || profileType.equals("LinkedIn2Profile")) {
+		   || profileType.equals("LinkedIn2Profile")
+		   || profileType.equals("WindowsLiveProfile")) {
 
 	    final String[] alias = (String[])ATTRIBUTE_NAMES_LOOKUP.get(alaName);
 	    for (int i = 0; i < alias.length; i++) {
