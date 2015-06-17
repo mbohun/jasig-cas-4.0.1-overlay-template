@@ -88,9 +88,14 @@ public class WindowsLiveClient extends BaseOAuth20Client<WindowsLiveProfile> {
         }
 
 	final JsonNode emails = (JsonNode)JsonHelper.get(json, "emails");
-	final String email = (String)JsonHelper.get(emails, "account");
-	System.out.println("WindowsLiveClient.extractUserProfile, found email:" + email); 
-	profile.addAttribute("email", email);
+	if (emails != null) {
+	    final String email = (String)JsonHelper.get(emails, "account");
+	    System.out.println("WindowsLiveClient.extractUserProfile, found email:" + email);
+	    profile.addAttribute("email", email);
+
+	} else {
+	    System.out.println("WindowsLiveClient.extractUserProfile, emails section not found! (Did you request the required OAuth2.0 scope 'wl.emails' ?)");
+	}
 
         return profile;
     }
