@@ -155,6 +155,10 @@
 <br />
 <a href="${TwitterClientUrl}">Authenticate with Twitter</a><br />
 <br />
+<!-- NOTE: pac4j 1.4.x uses hardoced GitHub OAuth scope 'user'; although the scope 'user:email'
+           is a part/subset of the scope 'user' requesting 'user:email' scope restricts the
+           required permissions to a read-only access to the user's email address.
+-->
 <a href="${GitHubClientUrl}&scope=user:email">Authenticate with GitHub</a><br />
 <br />
 <a href="${Google2ClientUrl}">Authenticate with Google</a><br />
