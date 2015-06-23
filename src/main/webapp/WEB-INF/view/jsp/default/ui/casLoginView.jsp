@@ -151,12 +151,12 @@
 
 <jsp:directive.include file="includes/bottom.jsp" />
 
-<a href="${FacebookClientUrl}"><img src="images/icons/Inficons/128x128/facebook.png"></img></a>
-<a href="${TwitterClientUrl}"><img src="images/icons/Inficons/128x128/twitter.png"></img></a>
-<a href="${GitHubClientUrl}&scope=user:email"><img src="images/icons/Inficons/128x128/github.png"></img></a>
-<a href="${Google2ClientUrl}"><img src="images/icons/Inficons/128x128/google-plus.png"></img></a>
-<a href="${LinkedIn2ClientUrl}"><img src="images/icons/Inficons/128x128/linkedin.png"></img></a>
-<a href="${WindowsLiveClientUrl}&scope=wl.emails"><img src="images/icons/Inficons/128x128/windows.png"></img></a>
+<a href="${FacebookClientUrl}"><img src="images/icons/Inficons/64x64/facebook.png"></img></a>
+<a href="${TwitterClientUrl}"><img src="images/icons/Inficons/64x64/twitter.png"></img></a>
+<a href="${GitHubClientUrl}&scope=user:email"><img src="images/icons/Inficons/64x64/github.png"></img></a>
+<a href="${Google2ClientUrl}"><img src="images/icons/Inficons/64x64/google-plus.png"></img></a>
+<a href="${LinkedIn2ClientUrl}"><img src="images/icons/Inficons/64x64/linkedin.png"></img></a>
+<a href="${WindowsLiveClientUrl}&scope=wl.emails"><img src="images/icons/Inficons/64x64/windows.png"></img></a>
 <br />
 
 <a href="${FacebookClientUrl}">Authenticate with Facebook</a> <br />
