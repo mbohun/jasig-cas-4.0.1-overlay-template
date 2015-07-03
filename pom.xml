@@ -115,12 +115,6 @@
 	    <version>5.1.35</version>
 	    <scope>runtime</scope>
 	</dependency>
-	<!-- TODO: required by slf4j/log4j ?-->
-	<dependency>
-	    <groupId>xml-apis</groupId>
-	    <artifactId>xml-apis</artifactId>
-	    <version>1.4.01</version>
-	</dependency>
 	<!-- TODO: review the use of commons-codec, newer jre version might support base64, no need for an external lib? -->
 	<dependency>
 	    <groupId>commons-codec</groupId>
