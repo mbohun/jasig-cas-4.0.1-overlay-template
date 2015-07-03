@@ -115,20 +115,6 @@
 	    <version>5.1.35</version>
 	    <scope>runtime</scope>
 	</dependency>
-	<dependency>
-	    <groupId>org.hibernate</groupId>
-	    <artifactId>hibernate-core</artifactId>
-	    <version>${hibernate.core.version}</version>
-	    <type>jar</type>
-	    <scope>runtime</scope>
-	</dependency>
-	<dependency>
-	    <groupId>org.hibernate</groupId>
-	    <artifactId>hibernate-entitymanager</artifactId>
-	    <version>${hibernate.core.version}</version>
-	    <type>jar</type>
-	    <scope>runtime</scope>
-	</dependency>
 	<!-- TODO: required by slf4j/log4j ?-->
 	<dependency>
 	    <groupId>xml-apis</groupId>
@@ -209,7 +195,6 @@
     <properties>
         <cas.version>4.0.2</cas.version>
 	<pac4j.version>1.4.2-SNAPSHOT</pac4j.version>
-	<hibernate.core.version>4.1.0.Final</hibernate.core.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
