@@ -74,12 +74,12 @@ public class UserCreatorALA implements UserCreator {
 				     firstname,                        //firstname
 				     lastname,                         //lastname
 				     password,                         //password
-				     "Canberra",                       //city
-				     "CSIRO",                          //organisation
-				     "test primary usage",             //primaryUserType
-				     "test secondary usage",           //secondaryUserType
-				     "ACT",                            //(AUS) state
-				     "0266616661");                    //telephone
+				     "",                               //city
+				     "",                               //organisation
+				     "",                               //primaryUserType
+				     "",                               //secondaryUserType
+				     "N/A",                            //(AUS) state
+				     "");                              //telephone
 
 	logger.debug("createUser rows_affected: {}", rows_affected);
     }
