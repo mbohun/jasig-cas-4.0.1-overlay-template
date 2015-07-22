@@ -26,7 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.BasicCredentialMetaData;
 import org.jasig.cas.authentication.HandlerResult;
 import org.jasig.cas.authentication.PreventedException;
-import org.jasig.cas.authentication.handler.support.AbstractPreAndPostProcessingAuthenticationHandler;
+import org.jasig.cas.authentication.AbstractAuthenticationHandler;
 import org.jasig.cas.authentication.Credential;
 import org.jasig.cas.authentication.principal.Principal;
 import org.jasig.cas.authentication.principal.PrincipalResolver;
@@ -40,6 +40,8 @@ import java.util.HashMap;
 import java.util.Collections;
 import java.util.regex.Pattern;
 import au.org.ala.cas.AttributeParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This handler authenticates the client credentials : it uses them to get the user profile returned by the provider
@@ -49,7 +51,9 @@ import au.org.ala.cas.AttributeParser;
  * @since 3.5.0
  */
 @SuppressWarnings("unchecked")
-public final class ALAClientAuthenticationHandler extends AbstractPreAndPostProcessingAuthenticationHandler {
+public final class ALAClientAuthenticationHandler extends AbstractAuthenticationHandler {
+
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     static final Pattern EMAIL_PATTERN  = Pattern.compile("^.+@.+\\..+$");
 
@@ -84,7 +88,7 @@ public final class ALAClientAuthenticationHandler extends AbstractPreAndPostProc
     }
 
     @Override
-    protected HandlerResult doAuthentication(final Credential credential) throws GeneralSecurityException, PreventedException {
+    public HandlerResult authenticate(final Credential credential) throws GeneralSecurityException, PreventedException {
         final ClientCredential clientCredentials = (ClientCredential) credential;
         logger.debug("clientCredentials : {}", clientCredentials);
 
