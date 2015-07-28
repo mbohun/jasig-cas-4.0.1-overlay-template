@@ -270,5 +270,6 @@
   <bean id="terminateSessionAction" class="org.jasig.cas.web.flow.TerminateSessionAction"
         c:cas-ref="centralAuthenticationService"
         c:tgtCookieGenerator-ref="ticketGrantingTicketCookieGenerator"
-        c:warnCookieGenerator-ref="warnCookieGenerator"/>
+        c:warnCookieGenerator-ref="warnCookieGenerator"
+	c:alaProxyAuthenticationCookieGenerator-ref="alaProxyAuthenticationCookieGenerator"/>
 </beans>

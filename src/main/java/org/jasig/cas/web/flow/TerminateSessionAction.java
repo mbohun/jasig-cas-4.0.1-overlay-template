@@ -52,6 +52,10 @@ public class TerminateSessionAction {
     @NotNull
     private final CookieRetrievingCookieGenerator warnCookieGenerator;
 
+    /** CookieGenerator for ALA Proxy Authentication Cookie */
+    @NotNull
+    private final CookieRetrievingCookieGenerator alaProxyAuthenticationCookieGenerator;
+
     /**
      * Creates a new instance with the given parameters.
      * @param cas Core business logic object.
@@ -61,10 +65,12 @@ public class TerminateSessionAction {
     public TerminateSessionAction(
             final CentralAuthenticationService cas,
             final CookieRetrievingCookieGenerator tgtCookieGenerator,
-            final CookieRetrievingCookieGenerator warnCookieGenerator) {
+            final CookieRetrievingCookieGenerator warnCookieGenerator,
+	    final CookieRetrievingCookieGenerator alaProxyAuthenticationCookieGenerator) {
         this.centralAuthenticationService = cas;
         this.ticketGrantingTicketCookieGenerator = tgtCookieGenerator;
         this.warnCookieGenerator = warnCookieGenerator;
+	this.alaProxyAuthenticationCookieGenerator = alaProxyAuthenticationCookieGenerator;
     }
 
     /**
@@ -88,6 +94,7 @@ public class TerminateSessionAction {
         final HttpServletResponse response = WebUtils.getHttpServletResponse(context);
         this.ticketGrantingTicketCookieGenerator.removeCookie(response);
         this.warnCookieGenerator.removeCookie(response);
+	this.alaProxyAuthenticationCookieGenerator.removeCookie(response);
         return this.eventFactorySupport.success(this);
     }
 }
