@@ -220,52 +220,16 @@
 	    <!-- TODO: usernameAttribute needs a fix to map ALL possible email field names: email, email-address, etc. -->
 	    <property name="usernameAttribute" value="email" />
             <property name="allowedAttributes">
+		<!-- NOTE: these are the CAS attributes (retrieved from mysql by the ${userStore.attribute.sql.query} )
+		     released to ALA CAS clients -->
 		<list>
-
-		    <!-- NOTE: this is (hopefully) only a note/reminder, these are the ALA client expected
-			 attributes we are trying to return from:
-			 org.jasig.cas.services.support.ALARegisteredServiceAttributeFilter
-		    -->
 		    <value>email</value>
 		    <value>firstname</value>
 		    <value>lastname</value>
 		    <value>userid</value>
 		    <value>authority</value>
-
-		    <!-- shared attributes: facebook, google -->
-		    <value>email</value>
-
-		    <!-- facebook specific -->
-                    <value>first_name</value>
-		    <value>last_name</value>
-		    <value>verified</value>
-		    <value>location</value>
-
-		    <!-- github specific -->
-
-		    <!-- google -->
-		    <value>given_name</value>
-		    <value>family_name</value>
-		    <value>verified_email</value>
-
-		    <!-- linkedin -->
-		    <value>email-address</value>
-		    <value>first-name</value>
-		    <value>last-name</value>
-
-		    <!-- twitter -->
-		    <!-- TODO: twitter is a placeholder only for now, pac4j-1.4.2-SNAPSHOT does not support at the moment
-			 passing the 'include_email=true' argument to the twitter's authentication endpoint URL.
-		    -->
-
 		</list>
 	    </property>
-
-	    <!-- TODO/NOTE: in jasig cas-4.1.0-SNAPSHOT they added concept of AttributeReleasePolicy
-	    <property name="attributeReleasePolicy">
-		<bean class="org.jasig.cas.services.ReturnAllAttributeReleasePolicy" />
-	    </property>
-	    -->
 	</bean>
     </util:list>
     
