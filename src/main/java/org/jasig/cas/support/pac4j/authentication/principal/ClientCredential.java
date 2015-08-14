@@ -22,6 +22,7 @@ import java.io.Serializable;
 
 import org.jasig.cas.authentication.Credential;
 import org.pac4j.core.profile.UserProfile;
+import au.org.ala.cas.AttributeParser;
 
 /**
  * This class represents client credentials and (after authentication) a user profile.
@@ -88,5 +89,10 @@ public final class ClientCredential implements Credential, Serializable {
             return this.userProfile.getTypedId();
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+	return this.getCredentials().getClientName() + "+" + AttributeParser.lookup("email", this.userProfile);
     }
 }
