@@ -93,6 +93,12 @@ public final class ClientCredential implements Credential, Serializable {
 
     @Override
     public String toString() {
-	return this.getCredentials().getClientName() + "+" + AttributeParser.lookup("email", this.userProfile);
+	final StringBuffer sb = new StringBuffer(credentials.getClientName());
+	if (this.userProfile != null) {
+	    sb.append("+");
+	    sb.append(AttributeParser.lookup("email", this.userProfile));
+	}
+
+	return sb.toString();
     }
 }
