@@ -18,11 +18,11 @@ package org.pac4j.oauth.client;
 import org.pac4j.core.context.WebContext;
 import org.pac4j.oauth.profile.JsonHelper;
 import org.pac4j.oauth.profile.OAuthAttributesDefinitions;
-import org.pac4j.core.profile.converter.Converters;
 import org.pac4j.oauth.profile.windowslive.WindowsLiveProfile;
-import org.scribe.builder.api.LiveApi;
+import org.scribe.builder.api.WindowsLiveApi;
 import org.scribe.model.OAuthConfig;
 import org.scribe.model.SignatureType;
+import org.scribe.model.Token;
 import org.scribe.oauth.ProxyOAuth20ServiceImpl;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -59,7 +59,7 @@ public class WindowsLiveClient extends BaseOAuth20Client<WindowsLiveProfile> {
     @Override
     protected void internalInit() {
         super.internalInit();
-        this.service = new ProxyOAuth20ServiceImpl(new LiveApi(), new OAuthConfig(this.key, this.secret,
+        this.service = new ProxyOAuth20ServiceImpl(new WindowsLiveApi(), new OAuthConfig(this.key, this.secret,
                                                                                   this.callbackUrl,
                                                                                   SignatureType.Header, "wl.basic", //NOTE: hardcoded scope wl.basic, we need wl.basic PLUS wl.emails in order to get the email address
                                                                                   null), this.connectTimeout,
@@ -67,7 +67,7 @@ public class WindowsLiveClient extends BaseOAuth20Client<WindowsLiveProfile> {
     }
     
     @Override
-    protected String getProfileUrl() {
+    protected String getProfileUrl(final Token accessToken) {
         return "https://apis.live.net/v5.0/me";
     }
     

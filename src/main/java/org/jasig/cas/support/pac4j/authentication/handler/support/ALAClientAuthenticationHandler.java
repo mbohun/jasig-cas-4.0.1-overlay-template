@@ -20,6 +20,8 @@ package org.jasig.cas.support.pac4j.authentication.handler.support;
 
 import java.security.GeneralSecurityException;
 import javax.security.auth.login.FailedLoginException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,7 +35,11 @@ import org.jasig.cas.authentication.principal.PrincipalResolver;
 import org.jasig.cas.support.pac4j.authentication.principal.ClientCredential;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
+import org.pac4j.core.context.J2EContext;
+import org.pac4j.core.context.WebContext;
 import org.pac4j.core.profile.UserProfile;
+import org.springframework.webflow.context.ExternalContextHolder;
+import org.springframework.webflow.context.servlet.ServletExternalContext;
 import au.org.ala.cas.UserCreator;
 import java.util.Map;
 import java.util.HashMap;
@@ -99,8 +105,14 @@ public final class ALAClientAuthenticationHandler extends AbstractAuthentication
         final Client<org.pac4j.core.credentials.Credentials, UserProfile> client = this.clients.findClient(clientName);
         logger.debug("client : {}", client);
 
+	// web context
+	final ServletExternalContext servletExternalContext = (ServletExternalContext) ExternalContextHolder.getExternalContext();
+	final HttpServletRequest request = (HttpServletRequest) servletExternalContext.getNativeRequest();
+	final HttpServletResponse response = (HttpServletResponse) servletExternalContext.getNativeResponse();
+	final WebContext webContext = new J2EContext(request, response);
+
         // get user profile
-        final UserProfile userProfile = client.getUserProfile(clientCredentials.getCredentials());
+        final UserProfile userProfile = client.getUserProfile(clientCredentials.getCredentials(), webContext);
         logger.debug("userProfile : {}", userProfile);
 
         if (userProfile != null && StringUtils.isNotBlank(userProfile.getTypedId())) {
