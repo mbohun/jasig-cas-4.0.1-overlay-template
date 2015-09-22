@@ -1,6 +1,10 @@
 package au.org.ala.cas;
 
 import org.pac4j.core.profile.UserProfile;
+import org.pac4j.oauth.profile.google2.Google2Profile;
+import org.pac4j.oauth.profile.google2.Google2Email;
+import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import org.slf4j.Logger;
@@ -23,11 +27,11 @@ public class AttributeParser {
     private AttributeParser() {} //this is just a stateless helper for now
 
     static final Map ATTRIBUTE_NAMES_LOOKUP = new HashMap() {
-	    {   //  ALA                       facebook,     google,        linkedin
+	    {   //  ALA                       facebook,     linkedin
 		//                            win live
-		put("email",     new String[]{"email",      "email",       "email-address"});
-		put("firstname", new String[]{"first_name", "given_name",  "first-name"});
-		put("lastname",  new String[]{"last_name",  "family_name", "last-name"});
+		put("email",     new String[]{"email",      "email-address"});
+		put("firstname", new String[]{"first_name", "first-name"});
+		put("lastname",  new String[]{"last_name",  "last-name"});
 	    }
 	};
 
@@ -104,7 +108,6 @@ public class AttributeParser {
 	    }
 
 	} else if (profileType.equals("FacebookProfile")
-		   || profileType.equals("Google2Profile")
 		   || profileType.equals("LinkedIn2Profile")
 		   || profileType.equals("WindowsLiveProfile")) {
 
@@ -127,6 +130,39 @@ public class AttributeParser {
 	    } else if (alaName.equals("lastname")) {
 		return AttributeParser.extractLastName((String)userAttributes.get("name"),
 						       (String)userAttributes.get("screen_name"));
+
+	    } else {
+		logger.debug("error, unknown attribute: {} requested!", alaName);
+		return null;
+	    }
+
+	} else if (profileType.equals("Google2Profile")) {
+	    final Google2Profile googleProfile = (Google2Profile)userProfile;
+	    if (alaName.equals("email")) {
+		// NOTE: in theory we could do here: return Google2Profile.getEmail() BUT that seems
+		//       to be grabbing and returning the first email from the list without checking
+		//       the email "type"; so just to be sure we do ENFORCE here returning the email
+		//       of type "account".
+		//
+		final List googleEmails = googleProfile.getEmails();
+		final Iterator iter = googleEmails.iterator();
+		while (iter.hasNext()) {
+		    final Google2Email ge = (Google2Email)iter.next();
+		    if (ge.getType().equals("account")) {
+			return ge.getEmail();
+		    }
+		}
+
+		// Not sure if this can really happen; we should reach this point only after a successful authentication,
+		// and that should be possible ONLY with a valid "account" email.
+		logger.debug("error, can't find required Google2Profile email of type \"account\"!");
+		return null;
+
+	    } else if (alaName.equals("firstname")) {
+		return googleProfile.getFirstName();
+
+	    } else if (alaName.equals("lastname")) {
+		return googleProfile.getFamilyName();
 
 	    } else {
 		logger.debug("error, unknown attribute: {} requested!", alaName);
