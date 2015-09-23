@@ -23,15 +23,12 @@ import javax.security.auth.login.FailedLoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang.StringUtils;
 import org.jasig.cas.authentication.BasicCredentialMetaData;
 import org.jasig.cas.authentication.HandlerResult;
 import org.jasig.cas.authentication.PreventedException;
 import org.jasig.cas.authentication.AbstractAuthenticationHandler;
 import org.jasig.cas.authentication.Credential;
-import org.jasig.cas.authentication.principal.Principal;
-import org.jasig.cas.authentication.principal.PrincipalResolver;
 import org.jasig.cas.support.pac4j.authentication.principal.ClientCredential;
 import org.pac4j.core.client.Client;
 import org.pac4j.core.client.Clients;
@@ -40,28 +37,23 @@ import org.pac4j.core.context.WebContext;
 import org.pac4j.core.profile.UserProfile;
 import org.springframework.webflow.context.ExternalContextHolder;
 import org.springframework.webflow.context.servlet.ServletExternalContext;
-import au.org.ala.cas.UserCreator;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
-import java.util.regex.Pattern;
-import au.org.ala.cas.AttributeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This handler authenticates the client credentials : it uses them to get the user profile returned by the provider
- * for an authenticated user.
+ * NOTE: This is a generic/common pac4j authentication handler doing ONLY authentication.
+ * TODO: rename it back to the original name, and submit a patch to jasig for:
+ *       - cas-4.0.0 - cas-4.0.3 / pac4j-1.4.2-SNAPSHOT
+ *       - cas-4.0.4 / pac4j-1.7.x
+ *       - cas-4.1.x / pac4j-1.7.x?
  *
  * @author Martin Bohun
- * @since 3.5.0
+ * @since 4.0
  */
 @SuppressWarnings("unchecked")
 public final class ALAClientAuthenticationHandler extends AbstractAuthenticationHandler {
 
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    static final Pattern EMAIL_PATTERN  = Pattern.compile("^.+@.+\\..+$");
 
     /**
      * The clients for authentication.
@@ -69,23 +61,13 @@ public final class ALAClientAuthenticationHandler extends AbstractAuthentication
     @NotNull
     private final Clients clients;
 
-    @NotNull
-    private final PrincipalResolver principalResolver;
-
-    @NotNull
-    private final UserCreator userCreator;
-
     /**
      * Define the clients.
      *
      * @param theClients The clients for authentication
      */
-    public ALAClientAuthenticationHandler(final Clients theClients,
-					  final PrincipalResolver principalResolver,
-					  final UserCreator userCreator) {
+    public ALAClientAuthenticationHandler(final Clients theClients) {
         this.clients = theClients;
-	this.principalResolver = principalResolver;
-	this.userCreator = userCreator;
     }
 
     @Override
@@ -117,43 +99,11 @@ public final class ALAClientAuthenticationHandler extends AbstractAuthentication
 
         if (userProfile != null && StringUtils.isNotBlank(userProfile.getTypedId())) {
             clientCredentials.setUserProfile(userProfile);
-
-	    final String email = AttributeParser.lookup("email", userProfile);
-	    logger.debug("email : {}", email);
-
-	    if (email==null || !EMAIL_PATTERN.matcher(email).matches()) {
-		logger.debug("Invalid email : {}, authentication aborted!", email);
-		throw new FailedLoginException("No email address found; email address is required to lookup (and/or create) ALA user!");
-	    }
-
-	    final Credential alaCredential = new Credential() {
-		    public String getId() {
-			return email;
-		    }
-		};
-
-	    // get the ALA user attributes from the userdetails DB ("userid", "firstname", "lastname", "authority")
-	    Principal principal = this.principalResolver.resolve(alaCredential);
-
-	    // does the ALA user exist?
-	    if (!principal.getAttributes().containsKey("userid")) { //TODO: make this nice and configurable
-		// create a new ALA user in the userdetails DB
-		logger.debug("user {} not found in ALA userdetails DB, creating new ALA user for: {}.", email, email);
-		this.userCreator.createUser(userProfile); //TODO: we can check this for failed user creation, to be accurate
-
-		// re-try (we have to retry, because that is how we get the required "userid")
-		principal = this.principalResolver.resolve(alaCredential);
-		if (!principal.getAttributes().containsKey("userid")) {
-		    // we failed to lookup ALA user (most likely because the creation above failed), complain, throw exception, etc.
-		    throw new FailedLoginException("Unable to create ALA user for " + clientCredentials);
-		}
-	    }
-
             return new HandlerResult(this,
-				     new BasicCredentialMetaData(credential), //TODO: credential or alaCredential?
-				     principal);
+				     new BasicCredentialMetaData(credential));
         }
 
+	// TODO: investigate usage of HandlerResult for auth failure, these exceptions do NOT work as expected!
         throw new FailedLoginException("Provider did not produce profile for " + clientCredentials);
     }
 }

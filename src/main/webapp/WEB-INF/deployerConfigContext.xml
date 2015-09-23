@@ -62,7 +62,7 @@
                    -->
                 <entry key-ref="proxyAuthenticationHandler" value-ref="proxyPrincipalResolver" />
                 <entry key-ref="primaryAuthenticationHandler" value-ref="primaryPrincipalResolver" />
-		<entry key-ref="secondaryAuthenticationHandler"><null /></entry>
+		<entry key-ref="secondaryAuthenticationHandler" value-ref="secondaryPrincipalResolver" />
             </map>
         </constructor-arg>
 
@@ -139,8 +139,6 @@
     <bean id="secondaryAuthenticationHandler"
 	  class="org.jasig.cas.support.pac4j.authentication.handler.support.ALAClientAuthenticationHandler">
 	<constructor-arg index="0" ref="clients"/>
-	<constructor-arg index="1" ref="primaryPrincipalResolver"/>
-	<constructor-arg index="2" ref="userCreatorALA"/>
     </bean>
 
     <bean id="userCreatorALA"
@@ -173,6 +171,14 @@
           class="org.jasig.cas.authentication.principal.PersonDirectoryPrincipalResolver" >
         <property name="attributeRepository" ref="attributeRepository" />
     </bean>
+
+    <!-- 
+       -->
+    <bean id="secondaryPrincipalResolver"
+          class="au.org.ala.cas.authentication.principal.DelegateAuthenticationPrincipalResolver" >
+	<constructor-arg index="0" ref="primaryPrincipalResolver"/>
+	<constructor-arg index="1" ref="userCreatorALA"/>
+    </bean>    
 
     <!--
     Bean that defines the attributes that a service may return.  This example uses the Stub/Mock version.  A real implementation
