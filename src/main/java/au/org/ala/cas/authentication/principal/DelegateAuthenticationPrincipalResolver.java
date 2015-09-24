@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import au.org.ala.cas.UserCreator;
 import au.org.ala.cas.AttributeParser;
+import au.org.ala.cas.PrincipalValidator;
+import au.org.ala.cas.PrincipalValidatorALA; //TODO: remove this, once we turn validator into a bean
 
 /**
  * NOTE: This is only a concept/experiment for now; it's goals are as follows:
@@ -59,6 +61,10 @@ public class DelegateAuthenticationPrincipalResolver implements PrincipalResolve
     @NotNull
     private final UserCreator userCreator;
 
+    @NotNull
+    private final PrincipalValidator principalValidator;
+
+    // TODO: check what and how was this used:
     /** Optional prinicpal attribute name. */
     private String principalAttributeName;
 
@@ -66,6 +72,7 @@ public class DelegateAuthenticationPrincipalResolver implements PrincipalResolve
 						   final UserCreator userCreator) {
 	this.principalResolver = principalResolver;
 	this.userCreator = userCreator;
+	this.principalValidator = new PrincipalValidatorALA(); //TODO: make this into a bean? we could have a map/list of diff validators?
     }
 
     @Override
@@ -99,7 +106,7 @@ public class DelegateAuthenticationPrincipalResolver implements PrincipalResolve
 	logger.debug("email : {}", email);
 
 	if (email==null || !EMAIL_PATTERN.matcher(email).matches()) {
-	    logger.debug("Invalid email : {}, authentication aborted!", email);
+	    logger.error("Invalid email : {}, authentication aborted!", email);
 	    return null;
 	}
 
@@ -111,23 +118,44 @@ public class DelegateAuthenticationPrincipalResolver implements PrincipalResolve
 	    };
 
 	// NOTE: this is the point where we joined/hooked into the existing principal resolver
-	// get the ALA user attributes from the userdetails DB ("userid", "firstname", "lastname", "authority")
-	Principal principal = this.principalResolver.resolve(alaCredential);
 
-	// does the ALA user exist?
-	if (!principal.getAttributes().containsKey("userid")) { //TODO: make this nice and configurable
-	    // create a new ALA user in the userdetails DB
-	    logger.debug("user {} not found in ALA userdetails DB, creating new ALA user for: {}.", email, email);
-	    this.userCreator.createUser(userProfile); //TODO: we can check this for failed user creation, to be accurate
+	// get the user attributes
+	Principal principal = this.principalResolver.resolve(alaCredential); // credentialConvertor.convert(credential)
+	logger.debug("{} resolved principal: {}, with attributes: {}",
+		     this.principalResolver,
+		     principal,
+		     principal == null ? "N/A" : principal.getAttributes());
 
-	    // re-try (we have to retry, because that is how we get the required "userid")
-	    principal = this.principalResolver.resolve(alaCredential);
-	    if (!principal.getAttributes().containsKey("userid")) {
-		// we failed to lookup ALA user (most likely because the creation above failed), complain, throw exception, etc.
-		return null;
-	    }
+	// does the user alrady exist OR is this a new user?
+	if (this.principalValidator.validate(principal)) {
+	    // NOTE: unfortunatelly ALA's mysql stored procedure sp_get_user_attributes returns for a non-existent user
+	    //       one attribute, that is then returned in Principal attributes (authority=null); therefore it seems
+	    //       to be safer to provide a dedicated validator that can:
+	    //       - examine the returned principal in details
+	    //       - be easily customized for other projects
+	    //
+	    return principal;
 	}
 
-	return principal;
+	logger.debug("user {} not found, creating new user for: {}.", email, email); // TODO: translatedCredential.getId() just in case it is not an email
+
+	// create new user
+	this.userCreator.createUser(userProfile); //TODO: we can check this for failed user creation, to be accurate
+
+	// re-try (we have to retry, because that is how we get the required "userid")
+	principal = this.principalResolver.resolve(alaCredential);
+	logger.debug("{} resolved principal: {}, with attributes: {}",
+		     this.principalResolver,
+		     principal,
+		     principal == null ? "N/A" : principal.getAttributes());
+
+	// does the user exist now / did we succee to create the user ?
+	if (this.principalValidator.validate(principal)) {
+	    return principal;
+	}
+
+	// we failed to lookup the user, after we tried to create the user, so we have a problem
+	logger.error("failed to create user for {}!", email);
+	return null;
     }
 }
