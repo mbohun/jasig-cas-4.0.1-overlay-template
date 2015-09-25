@@ -170,7 +170,38 @@
     <bean id="primaryPrincipalResolver"
           class="org.jasig.cas.authentication.principal.PersonDirectoryPrincipalResolver" >
         <property name="attributeRepository" ref="attributeRepository" />
+
+	<!-- NOTE: returnNullIfNoAttributes=false is the default, this is here only for
+	           example/explanation/clarity, see bellow the NOTE on principalValidatorALA
+	           bean for the whole story.
+	-->
+	<property name="returnNullIfNoAttributes" value="false" />
     </bean>
+
+    <!-- PrincipalValidator validates a Principal according to custom project/application specific rules
+	 NOTE: in THEORY you don't need a custom PrincipalValidator, you could set the
+	       PersonDirectoryPrincipalResolver returnNullIfNoAttributes property to true, that in turn
+	       should return a null (Principal) when a user was not found by primaryPrincipalResolver
+	       in DelegateAuthenticationPrincipalResolver, and let DelegateAuthenticationPrincipalResolver
+	       use that as an indicator that a user has to be created;
+	       HOWEVER!
+	       1. As of today (2015-09-25) there is a bug in jasig cas: https://github.com/Jasig/cas/issues/1170
+	          making this approach impossible, because you will ALWAYS get a valid (non null) Principal
+	          object from PersonDirectoryPrincipalResolver.resolve(), and therefore you do need
+		  a PrincipalValidator to examine the returned Principal object, if it is the real thing
+		  (user found), or just a dummy Principal (user not found). The jasig cas bug fix will be
+		  released in cas-4.0.6/cas-4.1.1.
+	       2. FURTHER - even if the bug is fixed the null-Principal-approach is going to work ONLY if your
+	          application can guarantee that NO attributes are returned when the user was not found;
+	          for example i accidentally found out that the mysql stored procedure our project (ALA) is
+		  using to get user attributes is returnin a Map containing one invalid attribute when no user
+		  was found, and therefore the null-Principal-approach would work for us only if we adjusted
+		  the mysql stored procedure, etc.
+    -->
+    <bean id="principalValidatorALA" class="au.org.ala.cas.PrincipalValidatorALA" />
+
+    <!-- converts credential from pac4j ClientCredential into project/application specific Credential -->
+    <bean id="clientCredentialsConvertorALA" class="au.org.ala.cas.ClientCredentialConvertorALA" />
 
     <!-- 
        -->
@@ -178,6 +209,8 @@
           class="au.org.ala.cas.authentication.principal.DelegateAuthenticationPrincipalResolver" >
 	<constructor-arg index="0" ref="primaryPrincipalResolver"/>
 	<constructor-arg index="1" ref="userCreatorALA"/>
+	<constructor-arg index="2" ref="principalValidatorALA"/>
+	<constructor-arg index="3" ref="clientCredentialsConvertorALA"/>
     </bean>    
 
     <!--

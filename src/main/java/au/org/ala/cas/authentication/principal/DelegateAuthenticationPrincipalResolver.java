@@ -9,9 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import au.org.ala.cas.UserCreator;
 import au.org.ala.cas.PrincipalValidator;
-import au.org.ala.cas.PrincipalValidatorALA; //TODO: remove this, once we turn validator into a bean
 import au.org.ala.cas.ClientCredentialConvertor;
-import au.org.ala.cas.ClientCredentialConvertorALA;
 
 /**
  * @author Martin Bohun
@@ -35,12 +33,15 @@ public class DelegateAuthenticationPrincipalResolver implements PrincipalResolve
     @NotNull
     private final ClientCredentialConvertor credentialConvertor;
 
+    // TODO: add proper javdoc comments
     public DelegateAuthenticationPrincipalResolver(final PrincipalResolver principalResolver,
-						   final UserCreator userCreator) {
+						   final UserCreator userCreator,
+						   final PrincipalValidator principalValidator,
+						   final ClientCredentialConvertor clientCredentialConvertor) {
 	this.principalResolver = principalResolver;
 	this.userCreator = userCreator;
-	this.principalValidator = new PrincipalValidatorALA(); //TODO: make this into a bean? we could have a map/list of diff validators?
-	this.credentialConvertor = new ClientCredentialConvertorALA(); //TODO: make this into a bean
+	this.principalValidator = principalValidator;
+	this.credentialConvertor = clientCredentialConvertor;
     }
 
     @Override
