@@ -13,6 +13,7 @@ import org.jasig.cas.authentication.handler.PasswordEncoder;
 import org.jasig.cas.authentication.handler.PlainTextPasswordEncoder;
 
 import au.org.ala.cas.AttributeParser;
+import org.jasig.cas.support.pac4j.authentication.principal.ClientCredential;
 import org.pac4j.core.profile.UserProfile;
 
 /**
@@ -48,7 +49,8 @@ public class UserCreatorALA implements UserCreator {
      *       Google, GitHub, LinkedIn, etc.
      */
     @Override
-    public void createUser(final UserProfile userProfile) {
+    public void createUser(final ClientCredential clientCredential) {
+	final UserProfile userProfile = clientCredential.getUserProfile();
 	logger.debug("createUser: {}", userProfile);
 
 	final String email     = AttributeParser.lookup("email",     userProfile);
@@ -83,6 +85,8 @@ public class UserCreatorALA implements UserCreator {
 
 	logger.debug("createUser rows_affected: {}", rows_affected);
     }
+
+    //TODO: refactor these from bean properties into ctor args
 
     /**
      * @param sql The sql to set.

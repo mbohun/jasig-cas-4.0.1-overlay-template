@@ -1,6 +1,6 @@
 package au.org.ala.cas;
 
-import org.pac4j.core.profile.UserProfile;
+import org.jasig.cas.support.pac4j.authentication.principal.ClientCredential;
 
 /**
  * User creation interface. UserCreator takes user attributes received from
@@ -12,5 +12,5 @@ import org.pac4j.core.profile.UserProfile;
  * @since 4.0.1
  */
 public interface UserCreator {
-    public void createUser(final UserProfile userProfile);
+    public void createUser(final ClientCredential clientCredential);
 }
